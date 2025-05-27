@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心 - GlobalSMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% include 'includes/header.html' %}
+
+    
+    <div class="container my-3 my-md-5">
+        <div class="row">
+            
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header border-0 bg-gradient-primary text-white p-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-badge fs-4 me-2"></i>
+                            <h5 class="mb-0">用户信息</h5>
+                        </div>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <div class="rounded-circle mx-auto bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
+                                <i class="bi bi-person-circle text-primary" style="font-size: 2.8rem;"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-1 fw-bold text-dark">{{ user.username }}</h5>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '未知' }}
+                        </p>
+                        <div class="bg-light rounded-4 p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-start">
+                                    <span class="text-muted d-block small">账户余额</span>
+                                    <span class="text-primary fw-bold fs-4">¥{{ user.balance }}</span>
+                                </div>
+                                <i class="bi bi-wallet2 text-primary opacity-50 fs-1"></i>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('recharge') }}" class="btn btn-primary btn-lg w-100 rounded-3 shadow-sm">
+                            <i class="bi bi-plus-circle me-2"></i>立即充值
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sidebar-menu mb-4">
+                    <div class="menu-header">用户导航</div>
+                    <div class="list-group">
+                        <a href="{{ url_for('user_center') }}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-speedometer2 me-2"></i> 控制面板
+                        </a>
+                        <a href="{{ url_for('history') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-clock-history me-2"></i> 历史记录
+                        </a>
+                        <a href="{{ url_for('account_security') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-shield-lock me-2"></i> 账户安全
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-lg-9">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                        <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>接码统计</h5>
+                        <a href="{{ url_for('index') }}" class="btn btn-light btn-sm">
+                            <i class="bi bi-phone me-1"></i>获取号码
+                        </a>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="dashboard-stats">
+                                    <div class="icon">
+                                        <i class="bi bi-list-check"></i>
+                                    </div>
+                                    <div class="data">
+                                        <div class="value">{{ orders|length }}</div>
+                                        <div class="label">总接码次数</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="dashboard-stats">
+                                    <div class="icon">
+                                        <i class="bi bi-wallet2"></i>
+                                    </div>
+                                    <div class="data">
+                                        <div class="value">{{ user.balance }}</div>
+                                        <div class="label">账户余额 (元)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="dashboard-stats">
+                                    <div class="icon">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="data">
+                                        <div class="value">{{ orders|selectattr('status', 'equalto', 'success')|list|length }}</div>
+                                        <div class="label">成功接收</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white p-3">
+                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>订单记录</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if orders %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>订单编号</th>
+                                            <th>国家</th>
+                                            <th>服务</th>
+                                            <th>电话号码</th>
+                                            <th>价格</th>
+                                            <th>状态</th>
+                                            <th>时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                            <tr>
+                                                <td><span class="text-muted">#</span> {{ order.id }}</td>
+                                                <td>{{ order.country_name }}</td>
+                                                <td>{{ order.service_name }}</td>
+                                                <td><code>{{ order.number }}</code></td>
+                                                <td>¥{{ order.price }}</td>
+                                                <td>
+                                                    {% if order.status == 'pending' %}
+                                                        <span class="badge bg-warning">等待验证码</span>
+                                                    {% elif order.status == 'success' %}
+                                                        <span class="badge bg-success">已收到</span>
+                                                    {% elif order.status == 'expired' %}
+                                                        <span class="badge bg-danger">已过期</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">{{ order.status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else '未知' }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i> 查看
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info border-0 d-flex align-items-center">
+                                <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                                <div>
+                                    您还没有任何订单记录，去<a href="{{ url_for('index') }}" class="alert-link">首页</a>获取号码吧！
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

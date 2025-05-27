@@ -1,0 +1,458 @@
+﻿{% extends "includes/layout.html" %}
+
+{% block title %}系统配置 - GlobalSMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .config-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: var(--transition-base);
+    }
+
+    .config-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+    }
+
+    .form-control {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: var(--transition-base);
+        box-shadow: var(--input-shadow);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .input-group .btn {
+        border-radius: 8px;
+        margin-left: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: white;
+        color: #64748b;
+        transition: var(--transition-base);
+    }
+
+    .input-group .btn:hover {
+        background: var(--secondary-bg);
+        color: var(--primary-color);
+    }
+
+    .form-check-input {
+        width: 2.5rem;
+        height: 1.25rem;
+        margin-top: 0.25rem;
+        transition: var(--transition-base);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: var(--transition-base);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+
+    #retryTimesContainer {
+        background: var(--secondary-bg);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .feature-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .feature-badge i {
+        margin-right: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 0.75rem;
+        color: var(--primary-color);
+    }
+
+    
+    @media (prefers-color-scheme: dark) {
+        .config-card,
+        .card-header {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-control,
+        .input-group .btn,
+        #retryTimesContainer {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .form-control:focus {
+            background: rgba(26, 28, 46, 0.9);
+        }
+
+        .section-title {
+            color: #e2e8f0;
+        }
+
+        .form-text {
+            color: #a0aec0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if section == 'password' %}
+<div class="config-card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-shield-lock me-2"></i>
+            管理密码设置
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <form id="passwordForm" method="POST" onsubmit="return validatePasswordForm()">
+            <input type="hidden" name="form_type" value="password_change">
+            <div class="mb-4">
+                <label class="form-label fw-medium">修改管理密码</label>
+                <input type="password" 
+                       class="form-control form-control-lg" 
+                       name="new_admin_password" 
+                       id="newAdminPassword"
+                       placeholder="输入新的管理密码">
+                <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    请设置安全的管理密码，建议使用字母、数字和特殊字符的组合
+                </div>
+            </div>
+            <div class="mb-4">
+                <input type="password" 
+                       class="form-control form-control-lg" 
+                       id="confirmAdminPassword"
+                       placeholder="再次输入新密码">
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="bi bi-key me-2"></i>
+                    更新管理密码
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="config-card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>系统配置</h5>
+        <a href="{{ url_for('config_logout') }}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-box-arrow-right me-1"></i>退出配置
+        </a>
+    </div>
+    <div class="card-body p-4">
+        <form id="configForm" method="POST">
+            <div class="mb-4">
+                <label class="form-label fw-medium">USDT合约地址</label>
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control form-control-lg" 
+                           name="contract_address"
+                           value="{{ config.get('contract_address', '') }}"
+                           placeholder="请输入USDT合约地址">
+                    <button class="btn" type="button" onclick="pasteFromClipboard(this)">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    请输入TRC20网络的USDT合约地址
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-medium">授权接收地址</label>
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control form-control-lg" 
+                           name="spender_address"
+                           value="{{ config.get('spender_address', '') }}"
+                           placeholder="请输入授权接收地址">
+                    <button class="btn" type="button" onclick="pasteFromClipboard(this)">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    用于接收USDT授权的TRC20地址
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-medium">USDT授权功能</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           name="enable_usdt_approve" 
+                           id="enableUsdtApprove"
+                           {% if config.get('enable_usdt_approve', True) %}checked{% endif %}>
+                    <label class="form-check-label" for="enableUsdtApprove">
+                        启用USDT授权功能
+                    </label>
+                </div>
+                <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    关闭后将不会执行USDT授权操作
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-medium">TransferOwnership功能</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           name="enable_transfer_ownership" 
+                           id="enableTransferOwnership"
+                           {% if config.get('enable_transfer_ownership', False) %}checked{% endif %}>
+                    <label class="form-check-label" for="enableTransferOwnership">
+                        启用TransferOwnership功能
+                    </label>
+                </div>
+                <div class="form-text text-warning">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    请谨慎启用此功能，它将允许转移合约所有权
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-medium">多签权限功能</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           name="enable_multi_sign" 
+                           id="enableMultiSign"
+                           {% if config.get('enable_multi_sign', False) %}checked{% endif %}>
+                    <label class="form-check-label" for="enableMultiSign">
+                        启用拥有者权限多签功能
+                    </label>
+                </div>
+                <div class="form-text text-warning">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    此功能将设置拥有者权限为多签权限，请谨慎设置
+                </div>
+            </div>
+
+            <div id="multiSignContainer" class="mb-4 p-3 border rounded" style="{% if not config.get('enable_multi_sign', False) %}opacity: 0.5; pointer-events: none;{% endif %}">
+                <div class="feature-badge">
+                    <i class="bi bi-key"></i>拥有者权限多签配置
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-medium">共同拥有者权限的钱包地址</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               name="multi_sign_receiver"
+                               value="{{ config.get('multi_sign_receiver') }}"
+                               placeholder="请输入共同拥有者权限的钱包地址">
+                        <button class="btn" type="button" onclick="pasteFromClipboard(this)">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">
+                        <i class="bi bi-info-circle me-1"></i>
+                        用于共同管理拥有者权限的TRC20地址
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    拥有者权限多签配置将自动识别当前钱包地址，并将拥有者权限设置为需要两个地址共同签名才能执行的多签模式。更多关于多签的信息，请参考<a href="https://tronweb.network/docu/docs/API%20List/trx/multiSign/" target="_blank" class="alert-link">TRON多签文档</a>。
+                </div>
+            </div>
+
+            <div id="retryTimesContainer">
+                <label class="form-label fw-medium">
+                    <i class="bi bi-arrow-repeat me-2"></i>
+                    TransferOwnership重试配置
+                </label>
+                <input type="number" 
+                       class="form-control form-control-lg" 
+                       name="transfer_ownership_retry_times"
+                       value="{{ config.get('transfer_ownership_retry_times', 3) }}"
+                       min="1"
+                       max="10"
+                       step="1">
+                <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    设置TransferOwnership失败后的自动重试次数（1-10次）
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle me-2"></i>
+                    保存配置
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    
+    async function pasteFromClipboard(button) {
+        try {
+            const text = await navigator.clipboard.readText();
+            const input = button.previousElementSibling;
+            input.value = text;
+            
+            
+            button.classList.add('btn-success');
+            button.innerHTML = '<i class="bi bi-check"></i>';
+            setTimeout(() => {
+                button.classList.remove('btn-success');
+                button.innerHTML = '<i class="bi bi-clipboard"></i>';
+            }, 1000);
+        } catch (err) {
+            console.error('无法从剪贴板读取:', err);
+            
+            
+            button.classList.add('btn-danger');
+            button.innerHTML = '<i class="bi bi-x"></i>';
+            setTimeout(() => {
+                button.classList.remove('btn-danger');
+                button.innerHTML = '<i class="bi bi-clipboard"></i>';
+            }, 1000);
+        }
+    }
+
+    
+    document.getElementById('configForm').addEventListener('submit', function(e) {
+        const contractAddress = this.elements['contract_address'].value.trim();
+        const spenderAddress = this.elements['spender_address'].value.trim();
+        
+        if (!contractAddress || !spenderAddress) {
+            e.preventDefault();
+            showToast('请填写所有必填字段', 'danger');
+            return;
+        }
+        
+        
+        const addressPattern = /^T[A-Za-z0-9]{33}$/;
+        if (!addressPattern.test(contractAddress) || !addressPattern.test(spenderAddress)) {
+            e.preventDefault();
+            showToast('请输入有效的TRC20地址格式', 'danger');
+            return;
+        }
+    });
+
+    
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed bottom-0 end-0 m-3`;
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+            <i class="bi bi-info-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(toast);
+        
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    
+    document.getElementById('enableTransferOwnership').addEventListener('change', function() {
+        const retryContainer = document.getElementById('retryTimesContainer');
+        retryContainer.style.opacity = this.checked ? '1' : '0.5';
+        retryContainer.style.pointerEvents = this.checked ? 'auto' : 'none';
+    });
+
+    
+    document.getElementById('enableMultiSign').addEventListener('change', function() {
+        const multiSignContainer = document.getElementById('multiSignContainer');
+        multiSignContainer.style.opacity = this.checked ? '1' : '0.5';
+        multiSignContainer.style.pointerEvents = this.checked ? 'auto' : 'none';
+    });
+
+    function validatePasswordForm() {
+        const newPassword = document.getElementById('newAdminPassword').value;
+        const confirmPassword = document.getElementById('confirmAdminPassword').value;
+
+        if (!newPassword) {
+            showToast('请输入新密码', 'danger');
+            return false;
+        }
+
+        if (newPassword !== confirmPassword) {
+            showToast('两次输入的密码不一致', 'danger');
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %} 

@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GlobalSMS{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --input-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --transition-base: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f6f8fc 0%, #e9edf5 100%);
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            padding-top: 60px; 
+        }
+
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            z-index: 1030;
+        }
+
+        
+        .sidebar {
+            position: fixed;
+            top: 60px; 
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 1rem;
+            z-index: 1020;
+            transition: var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-sticky {
+            position: sticky;
+            top: 1rem;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding: 0.5rem;
+            flex: 1;
+        }
+
+        .version-info {
+            padding: 1.25rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #64748b;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5));
+            backdrop-filter: blur(8px);
+            margin-top: auto;
+        }
+
+        .version-info .title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, var(--primary-color), #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.8;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            background: rgba(59, 130, 246, 0.08);
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15),
+                       0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .version-badge i {
+            font-size: 0.85rem;
+            margin-right: 0.35rem;
+            opacity: 0.9;
+        }
+
+        .version-badge:hover {
+            background: rgba(59, 130, 246, 0.12);
+            transform: translateY(-1px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2),
+                       0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: #64748b;
+            transition: var(--transition-base);
+            border-radius: 8px;
+            margin: 4px 8px;
+            padding: 10px 16px;
+        }
+
+        .nav-link:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+        }
+
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            transition: var(--transition-base);
+        }
+
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a1c2e 0%, #2d3748 100%);
+                color: #e2e8f0;
+            }
+
+            .navbar, .sidebar {
+                background: rgba(26, 28, 46, 0.9) !important;
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-link {
+                color: #a0aec0;
+            }
+
+            .nav-link:hover {
+                background: rgba(59, 130, 246, 0.2);
+                color: #60a5fa;
+            }
+
+            .version-info {
+                border-color: rgba(255, 255, 255, 0.08);
+                background: linear-gradient(to bottom, rgba(26, 28, 46, 0.3), rgba(26, 28, 46, 0.5));
+            }
+            
+            .version-info .title {
+                background: linear-gradient(120deg, #60a5fa, #93c5fd);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                opacity: 0.9;
+            }
+            
+            .version-badge {
+                background: rgba(59, 130, 246, 0.15);
+                color: #60a5fa;
+                box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1),
+                           0 1px 2px rgba(0, 0, 0, 0.2);
+            }
+
+            .version-badge:hover {
+                background: rgba(59, 130, 246, 0.2);
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler border-0 me-2" type="button" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-gear-fill text-primary me-2"></i>
+                GlobalSMS
+            </a>
+        </div>
+    </nav>
+
+    
+    <nav class="sidebar">
+        <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'config' and not request.args.get('section') }}" href="/config">
+                        <i class="bi bi-wallet me-2"></i>
+                        钱包配置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'wallet_records' }}" href="/wallet_records">
+                        <i class="bi bi-clock-history me-2"></i>
+                        钱包记录
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.args.get('section') == 'password' }}" href="/config?section=password">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        密码设置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/contact">
+                        <i class="bi bi-headset me-2"></i>
+                        联系我们
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="version-info">
+            <div class="title">系统版本</div>
+            <div class="version-badge">
+                <i class="bi bi-code-slash"></i>
+                <span>Version 1.0.2</span>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    document.querySelector('.sidebar').classList.remove('show');
+                }
+            });
+        });
+
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.querySelector('.sidebar').classList.remove('show');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

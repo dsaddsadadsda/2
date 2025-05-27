@@ -1,0 +1,167 @@
+﻿{% extends "includes/layout.html" %}
+
+{% block title %}配置登录 - GlobalSMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .config-login-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        max-width: 400px;
+        margin: 2rem auto;
+        overflow: hidden;
+    }
+
+    .config-login-header {
+        background: linear-gradient(135deg, var(--primary-color), #60a5fa);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .config-login-header h3 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .config-login-header p {
+        margin: 0.5rem 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .config-login-body {
+        padding: 2rem;
+    }
+
+    .form-control {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    
+    .slider-container {
+        display: none;
+    }
+
+    .captcha-container {
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .captcha-input {
+        width: 100%;
+        padding-right: 110px;
+    }
+
+    .captcha-code {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 100px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 0 8px 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        user-select: none;
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .config-login-card {
+            background: rgba(26, 28, 46, 0.8);
+        }
+
+        .captcha-code {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-login-card">
+    <div class="config-login-header">
+        <h3>配置登录</h3>
+        <p>请输入管理密码以访问配置页面</p>
+    </div>
+    <div class="config-login-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="post" action="/config" id="loginForm">
+            <div class="mb-3">
+                <input type="password" class="form-control" name="admin_password" placeholder="请输入管理密码" required>
+            </div>
+            <div class="mb-3">
+                <div class="captcha-container">
+                    <input type="text" class="form-control captcha-input" name="captcha" maxlength="4" placeholder="请输入验证码" required>
+                    <div class="captcha-code" id="captchaCode" onclick="refreshCaptcha()">1234</div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="bi bi-unlock me-2"></i>验证密码
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentCaptcha = '';
+
+function generateCaptcha() {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+function refreshCaptcha() {
+    currentCaptcha = generateCaptcha();
+    document.getElementById('captchaCode').textContent = currentCaptcha;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    refreshCaptcha();
+    
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const captchaInput = document.querySelector('input[name="captcha"]');
+        if(captchaInput.value === currentCaptcha) {
+            this.submit();
+        } else {
+            alert('验证码错误,请重新输入');
+            captchaInput.value = '';
+            refreshCaptcha();
+        }
+    });
+});
+</script>
+{% endblock %} 

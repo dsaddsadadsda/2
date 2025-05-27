@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalSMS - 专业全球接码服务平台</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-filter.css') }}">
+    <style>
+        
+        .countries-pagination {
+            margin-top: 1.5rem !important;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .countries-pagination .pagination {
+            margin-bottom: 0;
+            gap: 0.25rem;
+        }
+        
+        .countries-pagination .page-link {
+            color: var(--primary-color);
+            border-color: #d8e0ed;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            min-width: 38px;
+            text-align: center;
+            border-radius: var(--border-radius) !important;
+            margin: 0;
+        }
+        
+        .countries-pagination .page-link:hover {
+            color: var(--secondary-color);
+            background-color: #f3f7fb;
+            border-color: #c8d4e6;
+            z-index: 1;
+        }
+        
+        .countries-pagination .page-item.active .page-link {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .countries-pagination .page-item.disabled .page-link {
+            color: #a8b8cd;
+            background-color: #f9fbfd;
+            border-color: #e5e9f2;
+            pointer-events: none;
+        }
+        
+        
+        @media (max-width: 767.98px) {
+            .countries-pagination .pagination {
+                justify-content: center;
+            }
+            
+            .countries-pagination .page-link {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.875rem;
+                min-width: 32px;
+            }
+        }
+        
+        
+        @media (max-width: 576px) {
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .page-link {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        
+        .stats-container {
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stats-icon i {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .stats-content h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stats-content p {
+            margin-bottom: 0;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        
+        @media (max-width: 767.98px) {
+            .stats-container {
+                padding: 1.25rem !important;
+            }
+            
+            .stats-item {
+                width: 100%;
+                padding: 0.75rem;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+            
+            .stats-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+            
+            .stats-item:first-child {
+                padding-top: 0;
+            }
+            
+            .stats-icon {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+            }
+            
+            .stats-icon i {
+                font-size: 1.1rem;
+            }
+            
+            .stats-content h6 {
+                font-size: 0.95rem;
+            }
+            
+            .stats-content p {
+                font-size: 0.8rem;
+            }
+        }
+
+        
+        .countries-section {
+            position: relative;
+            min-height: 200px;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.625rem 1.25rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn i {
+            font-size: 1.1em;
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                min-height: 40px;
+                padding: 0.5rem 1rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        #countries-container {
+            position: relative;
+            min-height: 200px;
+            margin-top: 0.5rem;
+        }
+
+        #countries-container .spinner-border {
+            display: none;
+        }
+
+        
+        .countries-section h5 {
+            position: relative;
+            z-index: 11;  
+            background: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .login-overlay {
+            position: absolute;
+            top: 2.5rem;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;  
+            backdrop-filter: blur(4px);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .login-overlay .lock-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .login-overlay .message {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            padding: 0 1rem;
+            font-size: 0.95rem;
+        }
+
+        .login-overlay .btn {
+            min-width: 120px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .login-overlay {
+                background: rgba(26, 28, 46, 0.98);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            }
+            
+            .login-overlay .message {
+                color: #94a3b8;
+            }
+        }
+
+        
+        header {
+            position: relative;
+            z-index: 1040;
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/header.html' %}
+
+    
+    <div class="container my-3 my-md-5">
+        <div class="row">
+            
+            <div class="col-lg-3 mb-4 d-none d-lg-block">
+                <div class="sidebar-menu mb-4">
+                    <div class="menu-header">服务导航</div>
+                    <div class="list-group">
+                        <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-phone"></i> 获取接码号码
+                        </a>
+                        <a href="{{ url_for('api_docs') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-credit-card"></i> API接口服务
+                        </a>
+                        <a href="{{ url_for('support') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-headset"></i> 客户支持中心
+                        </a>
+                        <a href="{{ url_for('faq') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-chat-text"></i> 常见问题解答
+                        </a>
+                        <a href="{{ url_for('tutorial') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-journal-text"></i> 使用教程
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i> 安全保障</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="security-badges">
+                            <div class="security-badge">
+                                <i class="bi bi-shield-lock"></i> SSL加密
+                            </div>
+                            <div class="security-badge">
+                                <i class="bi bi-patch-check"></i> 实名认证
+                            </div>
+                            <div class="security-badge">
+                                <i class="bi bi-bank"></i> 资金存管
+                            </div>
+                            <div class="security-badge">
+                                <i class="bi bi-lock"></i> 数据加密
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-body text-center py-4">
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-headset text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-2 fw-bold">专业技术支持</h5>
+                        <p class="text-muted mb-3">7x24小时全天候服务响应</p>
+                        <a href="https://t.me/jofax" target="_blank" class="btn btn-primary btn-sm px-4 rounded-pill">
+                            <i class="bi bi-chat-dots me-1"></i> 咨询客服
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-12 d-lg-none mb-3">
+                <div class="navigation-buttons mb-4">
+                    <div class="d-flex justify-content-between gap-2">
+                        <button class="btn btn-primary flex-grow-1 navigation-btn" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSidebar" aria-expanded="false" aria-controls="mobileSidebar">
+                            <i class="bi bi-grid me-1"></i> 服务导航
+                        </button>
+                        <a href="{{ url_for('support') }}" class="btn btn-outline-primary flex-grow-1 navigation-btn">
+                            <i class="bi bi-headset me-1"></i> 在线客服
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="collapse mt-3" id="mobileSidebar">
+                    <div class="list-group shadow-sm mb-3">
+                        <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-phone"></i> 获取接码号码
+                        </a>
+                        <a href="{{ url_for('api_docs') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-credit-card"></i> API接口服务
+                        </a>
+                        <a href="{{ url_for('faq') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-chat-text"></i> 常见问题解答
+                        </a>
+                        <a href="{{ url_for('tutorial') }}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-journal-text"></i> 使用教程
+                        </a>
+                    </div>
+                    
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="security-badge">
+                                        <i class="bi bi-shield-lock"></i> SSL加密
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="security-badge">
+                                        <i class="bi bi-patch-check"></i> 实名认证
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-lg-9">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-phone-vibrate me-2"></i> 接码服务中心</h4>
+                        <div>
+                            <span class="badge bg-success me-2"><i class="bi bi-activity"></i> 系统状态正常</span>
+                            <span class="badge bg-primary"><i class="bi bi-clock"></i> 实时更新</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="stats-container rounded-4 p-4">
+                                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                                        <div class="stats-item">
+                                            <div class="stats-icon">
+                                                <i class="bi bi-globe"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h6>全球覆盖</h6>
+                                                <p>支持150+国家和地区</p>
+                                            </div>
+                                        </div>
+                                        <div class="stats-item">
+                                            <div class="stats-icon">
+                                                <i class="bi bi-shield-check"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h6>高接收率</h6>
+                                                <p>成功率达99.9%</p>
+                                            </div>
+                                        </div>
+                                        <div class="stats-item">
+                                            <div class="stats-icon">
+                                                <i class="bi bi-lightning-charge"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h6>即时到账</h6>
+                                                <p>充值秒到，即刻使用</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="card mb-4 search-filter-card">
+                            <div class="card-body p-3">
+                                <div class="row g-2">
+                                    <div class="col-12 col-lg-4 mb-2 mb-lg-0">
+                                        <div class="input-group search-input-wrapper">
+                                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                            <input type="text" class="form-control" placeholder="搜索国家/地区..." id="countrySearch">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-lg-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-filter"></i></span>
+                                            <select class="form-select" id="regionFilter">
+                                                <option value="">所有地区</option>
+                                                <option value="asia">亚洲</option>
+                                                <option value="europe">欧洲</option>
+                                                <option value="america">美洲</option>
+                                                <option value="africa">非洲</option>
+                                                <option value="oceania">大洋洲</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-lg-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+                                            <select class="form-select" id="sortOrder">
+                                                <option value="popular">按热门排序</option>
+                                                <option value="name">按名称排序</option>
+                                                <option value="code">按国家代码排序</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-4 countries-section">
+                            <h5 class="mb-3 d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-globe2 me-2"></i> 选择国家/地区</span>
+                                <small class="text-muted">支持 {{ countries_count }}+ 国家和地区</small>
+                            </h5>
+                            <div class="row" id="countries-container">
+                                <div class="col-12 text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">加载中...</span>
+                                    </div>
+                                    <p>加载所有国家数据，请稍候...</p>
+                                </div>
+                            </div>
+                            {% if not session.get('user_id') and not current_user.is_authenticated %}
+                            <div class="login-overlay">
+                                <i class="bi bi-lock-fill lock-icon"></i>
+                                <p class="message">请登录后查看所有可用国家和地区</p>
+                                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>立即登录
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        
+                        <div class="mb-4 d-none" id="services-section">
+                            <h5 class="mb-3 d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-app me-2"></i> 选择服务</span>
+                                <small class="text-muted">支持 200+ 主流应用服务</small>
+                            </h5>
+                            <div class="row" id="services-container">
+                                
+                            </div>
+                        </div>
+
+                        
+                        <div class="text-center mt-4 d-none" id="get-number-section">
+                            <button class="btn btn-success btn-lg px-5" id="get-number-btn">
+                                <i class="bi bi-telephone-fill me-2"></i> 获取号码
+                            </button>
+                            <p class="text-muted mt-2"><small>点击获取号码按钮后，系统将为您分配一个临时手机号码用于接收验证码</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="dashboard-stats">
+                            <div class="icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="data">
+                                <div class="value">安全可靠</div>
+                                <div class="label">一次性号码，保障隐私安全</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-stats">
+                            <div class="icon">
+                                <i class="bi bi-lightning-charge"></i>
+                            </div>
+                            <div class="data">
+                                <div class="value">快速响应</div>
+                                <div class="label">验证码实时接收，无需等待</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-stats">
+                            <div class="icon">
+                                <i class="bi bi-globe"></i>
+                            </div>
+                            <div class="data">
+                                <div class="value">全球覆盖</div>
+                                <div class="label">支持全球150+国家地区</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-arrow-right-circle me-2"></i> 使用流程</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person-plus text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1">注册登录</h6>
+                                <p class="small text-muted mb-0">创建账户或登录系统</p>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-globe text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1">选择国家</h6>
+                                <p class="small text-muted mb-0">选择国家和服务</p>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-phone text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1">获取号码</h6>
+                                <p class="small text-muted mb-0">系统分配接码号码</p>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-chat-dots text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1">接收验证码</h6>
+                                <p class="small text-muted mb-0">实时查看验证码</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal fade" id="rechargeModal" tabindex="-1" aria-labelledby="rechargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rechargeModalLabel"><i class="bi bi-wallet2 me-2"></i> 账户余额不足</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-danger bg-opacity-10 p-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="bi bi-exclamation-triangle text-danger fs-3"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-1">您的账户余额不足</h5>
+                            <p class="mb-0 text-muted">无法获取号码，请先充值后再试</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info border-0 d-flex">
+                        <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                        <div>
+                            <strong>温馨提示：</strong>
+                            <p class="mb-0">我们提供多种充值选择，充值后即可使用全球验证码接收服务。新用户充值满50元即可享受9折优惠！</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="card border h-100">
+                                <div class="card-body text-center p-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-lightning-charge text-primary fs-4"></i>
+                                    </div>
+                                    <h6>快速充值</h6>
+                                    <p class="small text-muted mb-0">即时到账，立即使用</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card border h-100">
+                                <div class="card-body text-center p-3">
+                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-currency-exchange text-success fs-4"></i>
+                                    </div>
+                                    <h6>多种支付</h6>
+                                    <p class="small text-muted mb-0">支持多种支付方式</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">稍后充值</button>
+                    </div>
+                    <a href="{{ url_for('recharge') }}" class="btn btn-primary">
+                        <i class="bi bi-wallet2 me-2"></i> 立即充值
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <footer class="bg-dark py-3">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-0 text-white-50">© 2025 GlobalSMS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    
+    <div class="modal fade" id="supportModal" tabindex="-1" aria-labelledby="supportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="supportModalLabel"><i class="bi bi-headset me-2"></i> 在线客服</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <img src="https://via.placeholder.com/80x80?text=客服" alt="客服" class="rounded-circle mb-3">
+                        <h5>客服小美</h5>
+                        <p class="text-muted">在线 | 响应时间: <span class="text-success">通常1分钟内</span></p>
+                    </div>
+                    <div class="chat-container bg-light p-3 rounded" style="height: 250px; overflow-y: auto;">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="https://via.placeholder.com/36x36?text=客服" alt="客服" class="rounded-circle" width="36" height="36">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="bg-white p-2 rounded shadow-sm">
+                                    <p class="mb-0">您好！欢迎使用我们的接码服务，有什么可以帮助您的吗？</p>
+                                </div>
+                                <small class="text-muted">刚刚</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="输入您的问题...">
+                            <button class="btn btn-primary" type="button">发送</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-image"></i> 图片</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-emoji-smile"></i> 表情</button>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/countries.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search-filter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login-handler.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            {% if session.get('user_id') or current_user.is_authenticated %}
+                console.log('User is logged in, hiding login overlay');
+                
+                if (typeof hideLoginOverlay === 'function') {
+                    hideLoginOverlay();
+                } else {
+                    
+                    const loginOverlay = document.querySelector('.login-overlay');
+                    if (loginOverlay) {
+                        loginOverlay.style.display = 'none';
+                        loginOverlay.style.zIndex = '-1';
+                    }
+                }
+            {% else %}
+                console.log('User is not logged in, showing login overlay');
+                
+                if (typeof showLoginOverlay === 'function') {
+                    showLoginOverlay();
+                }
+            {% endif %}
+            
+            
+            const getNumberBtn = document.getElementById('get-number-btn');
+            if (getNumberBtn) {
+                getNumberBtn.addEventListener('click', function() {
+                    handleGetNumber();
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

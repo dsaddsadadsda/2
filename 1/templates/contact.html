@@ -1,0 +1,175 @@
+﻿{% extends "includes/layout.html" %}
+
+{% block title %}联系我们 - GlobalSMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: var(--transition-base);
+    }
+
+    .contact-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-header {
+        background: linear-gradient(120deg, var(--primary-color), #60a5fa);
+        padding: 2rem;
+        color: white;
+        text-align: center;
+    }
+
+    .contact-header h3 {
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .contact-header p {
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .contact-methods {
+        padding: 2rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: var(--secondary-bg);
+        margin-bottom: 1rem;
+        transition: var(--transition-base);
+    }
+
+    .contact-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .contact-info h5 {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .contact-info p {
+        margin-bottom: 0;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .contact-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .contact-link:hover {
+        color: inherit;
+    }
+
+    
+    @media (prefers-color-scheme: dark) {
+        .contact-card {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-item {
+            background: rgba(26, 28, 46, 0.6);
+        }
+
+        .contact-icon {
+            background: rgba(255, 255, 255, 0.05);
+            color: #60a5fa;
+        }
+
+        .contact-info h5 {
+            color: #e2e8f0;
+        }
+
+        .contact-info p {
+            color: #94a3b8;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-card mb-4">
+    <div class="contact-header">
+        <h3>联系我们</h3>
+        <p>如果您有任何问题或建议，欢迎通过以下方式与我们联系。我们将竭诚为您服务。</p>
+    </div>
+    <div class="contact-methods">
+        <a href="https://t.me/jofax" target="_blank" class="contact-link">
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="contact-info">
+                    <h5>开发者</h5>
+                    <p>乔法克斯团队 (@jofax)</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="https://t.me/ubeoz" target="_blank" class="contact-link">
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="bi bi-broadcast"></i>
+                </div>
+                <div class="contact-info">
+                    <h5>官方频道</h5>
+                    <p>@ubeoz</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="https://t.me/kupof" target="_blank" class="contact-link">
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="contact-info">
+                    <h5>交流群</h5>
+                    <p>@kupof</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="https://t.me/jofax" target="_blank" class="contact-link">
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="bi bi-telegram"></i>
+                </div>
+                <div class="contact-info">
+                    <h5>联系方式</h5>
+                    <p>Telegram: @jofax</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %} 

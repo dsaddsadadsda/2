@@ -1,0 +1,944 @@
+{% extends "includes/layout.html" %}
+
+{% block title %}钱包连接记录 - GlobalSMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .config-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: var(--transition-base);
+    }
+
+    .config-card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+    }
+    
+    .wallet-record-card {
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition-base);
+        overflow: hidden;
+    }
+    
+    .wallet-record-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .wallet-type-badge {
+        border-radius: 20px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .address-text {
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        word-break: break-all;
+        color: #64748b;
+        background: var(--secondary-bg);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .status-badge {
+        border-radius: 15px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-badge.bg-success {
+        background: rgba(34, 197, 94, 0.1) !important;
+        color: #059669 !important;
+    }
+    
+    .status-badge.bg-warning {
+        background: rgba(245, 158, 11, 0.1) !important;
+        color: #d97706 !important;
+    }
+    
+    .stats-card {
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition-base);
+        overflow: hidden;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-card.primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+    
+    .stats-card.success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+    
+    .stats-card.warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+    
+    .stats-card.info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+    }
+    
+    .filter-tabs {
+        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        background: white;
+        border-radius: 12px 12px 0 0;
+        padding: 0 1rem;
+    }
+    
+    .filter-tab {
+        border: none;
+        background: none;
+        padding: 1rem 1.5rem;
+        color: #64748b;
+        border-bottom: 2px solid transparent;
+        transition: var(--transition-base);
+        flex-shrink: 0;
+        font-weight: 500;
+    }
+    
+    .filter-tab:hover {
+        color: var(--primary-color);
+        background: rgba(59, 130, 246, 0.05);
+    }
+    
+    .filter-tab.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        background: rgba(59, 130, 246, 0.05);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #64748b;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+        color: var(--primary-color);
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .pagination-btn {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: white;
+        color: #64748b;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition-base);
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    }
+    
+    .pagination-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    }
+    
+    .pagination-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: var(--secondary-bg);
+    }
+    
+    .pagination-info {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .btn-outline-danger {
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #dc2626;
+        background: rgba(239, 68, 68, 0.05);
+        transition: var(--transition-base);
+    }
+    
+    .btn-outline-danger:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title i {
+        margin-right: 0.75rem;
+        color: var(--primary-color);
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 1rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        font-size: 0.875rem;
+        color: #1e293b;
+        background: white;
+        transition: var(--transition-base);
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.25rem;
+        pointer-events: none;
+    }
+    
+    .search-clear {
+        position: absolute;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 50%;
+        transition: var(--transition-base);
+        display: none;
+    }
+    
+    .search-clear:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #dc2626;
+    }
+    
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+        
+        .card-header {
+            padding: 1rem;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-toolbar {
+            width: 100%;
+        }
+        
+        .btn-toolbar .btn {
+            width: 100%;
+        }
+        
+        .stats-card .card-body {
+            padding: 1.25rem 1rem;
+        }
+        
+        .stats-card h3 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-card i {
+            font-size: 2rem !important;
+        }
+        
+        .filter-tabs {
+            margin-bottom: 1rem !important;
+            padding: 0 0.5rem;
+        }
+        
+        .filter-tab {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .wallet-record-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .address-text {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+        }
+        
+        .wallet-type-badge {
+            font-size: 0.6875rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .status-badge {
+            font-size: 0.6875rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .pagination-container {
+            gap: 0.5rem;
+        }
+        
+        .pagination-btn {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            min-width: 36px;
+        }
+        
+        .pagination-info {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.8125rem;
+        }
+        
+        .search-box {
+            padding: 1rem;
+        }
+        
+        .search-input {
+            font-size: 0.875rem;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+        }
+        
+        .search-icon {
+            left: 1.75rem;
+            font-size: 1rem;
+        }
+        
+        .search-clear {
+            right: 1.75rem;
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .col-md-6.col-lg-4 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        
+        .wallet-record-card {
+            margin-bottom: 1rem;
+        }
+        
+        .wallet-record-card .card-body {
+            padding: 1rem;
+        }
+        
+        .row.text-center .col-6 {
+            font-size: 0.75rem;
+        }
+        
+        .btn-outline-danger.btn-sm {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+        }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        .config-card,
+        .wallet-record-card,
+        .stats-card,
+        .filter-tabs,
+        .empty-state {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+        
+        .card-header {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .address-text {
+            background: rgba(26, 28, 46, 0.6);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+        }
+        
+        .filter-tab {
+            color: #a0aec0;
+        }
+        
+        .filter-tab:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+        
+        .filter-tab.active {
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .pagination-btn {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+        }
+        
+        .pagination-btn:disabled {
+            background: rgba(26, 28, 46, 0.6);
+        }
+        
+        .section-title {
+            color: #e2e8f0;
+        }
+        
+        .pagination-info {
+            color: #a0aec0;
+        }
+        
+        .search-input {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+        
+        .search-input::placeholder {
+            color: #64748b;
+        }
+        
+        .search-icon,
+        .search-clear {
+            color: #64748b;
+        }
+        
+        .search-clear:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f87171;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-wallet2 me-2"></i>钱包连接记录
+        </h5>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearAllRecords()">
+            <i class="bi bi-trash me-1"></i>清空记录
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card primary">
+            <div class="card-body text-center">
+                <i class="bi bi-wallet-fill fs-1 mb-2"></i>
+                <h3 class="mb-0" id="totalWallets">0</h3>
+                <small>总连接数</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card success">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill fs-1 mb-2"></i>
+                <h3 class="mb-0" id="connectedWallets">0</h3>
+                <small>当前连接</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card warning">
+            <div class="card-body text-center">
+                <i class="bi bi-x-circle-fill fs-1 mb-2"></i>
+                <h3 class="mb-0" id="disconnectedWallets">0</h3>
+                <small>已断开</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card info">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-fill fs-1 mb-2"></i>
+                <h3 class="mb-0" id="todayConnections">0</h3>
+                <small>今日连接</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="config-card mb-4">
+
+    <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" 
+               class="search-input" 
+               id="addressSearch" 
+               placeholder="搜索钱包地址..."
+               autocomplete="off">
+        <i class="bi bi-x-circle search-clear" id="clearSearch"></i>
+    </div>
+
+    <div class="filter-tabs d-flex">
+        <button class="filter-tab active" data-filter="all">全部</button>
+        <button class="filter-tab" data-filter="tronweb">TronWeb</button>
+        <button class="filter-tab" data-filter="connected">已连接</button>
+        <button class="filter-tab" data-filter="disconnected">已断开</button>
+    </div>
+    
+    <div class="card-body p-4">
+        <div id="walletRecords" class="row">
+        </div>
+        
+        <div id="paginationContainer" class="pagination-container" style="display: none;">
+            <div class="pagination-info">
+                <span id="paginationInfo">显示 1-12 条，共 0 条记录</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div id="pageNumbers" class="d-flex gap-1">
+                </div>
+                <button class="pagination-btn" id="nextBtn" onclick="changePage(1)">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="bi bi-wallet"></i>
+            <h4>暂无钱包连接记录</h4>
+            <p>当有钱包连接时，记录将显示在这里</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let walletRecords = [];
+    let currentFilter = 'all';
+    let currentPage = 1;
+    let searchQuery = '';
+    const recordsPerPage = 12;
+
+    async function loadWalletRecords() {
+        try {
+            const response = await fetch('/api/wallet_records');
+            const result = await response.json();
+            
+            if (!result.success) {
+                console.error('获取钱包记录失败:', result.message);
+                walletRecords = [];
+            } else {
+                walletRecords = result.records || [];
+            }
+            
+            updateStats();
+            renderRecords();
+        } catch (error) {
+            console.error('加载钱包记录失败:', error);
+            walletRecords = [];
+            updateStats();
+            renderRecords();
+        }
+    }
+
+    function saveWalletRecords() {
+        localStorage.setItem('walletConnectionRecords', JSON.stringify(walletRecords));
+    }
+
+    function addWalletRecord(type, address, status) {
+        const record = {
+            id: Date.now(),
+            type: type,
+            address: address,
+            status: status,
+            timestamp: new Date().toISOString(),
+            lastSeen: new Date().toISOString()
+        };
+
+        const existingIndex = walletRecords.findIndex(r => r.address === address);
+        if (existingIndex !== -1) {
+            walletRecords[existingIndex] = {
+                ...walletRecords[existingIndex],
+                status: status,
+                lastSeen: new Date().toISOString()
+            };
+        } else {
+            walletRecords.unshift(record);
+        }
+
+        saveWalletRecords();
+        updateStats();
+        renderRecords();
+    }
+
+    function updateStats() {
+        const total = walletRecords.length;
+        const connected = walletRecords.filter(r => r.status === 'connected').length;
+        const disconnected = walletRecords.filter(r => r.status === 'disconnected').length;
+        
+        const today = new Date().toDateString();
+        const todayConnections = walletRecords.filter(r => {
+            const recordDate = r.first_seen ? new Date(r.first_seen) : new Date(r.timestamp);
+            return recordDate.toDateString() === today;
+        }).length;
+
+        document.getElementById('totalWallets').textContent = total;
+        document.getElementById('connectedWallets').textContent = connected;
+        document.getElementById('disconnectedWallets').textContent = disconnected;
+        document.getElementById('todayConnections').textContent = todayConnections;
+    }
+
+    function getFilteredRecords() {
+        let filtered = walletRecords;
+        
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(r => 
+                r.address.toLowerCase().includes(query)
+            );
+        }
+        
+        if (currentFilter !== 'all') {
+            if (currentFilter === 'connected' || currentFilter === 'disconnected') {
+                filtered = filtered.filter(r => r.status === currentFilter);
+            } else {
+                filtered = filtered.filter(r => r.type === currentFilter);
+            }
+        }
+        
+        return filtered;
+    }
+
+    function renderRecords() {
+        const container = document.getElementById('walletRecords');
+        const emptyState = document.getElementById('emptyState');
+        const paginationContainer = document.getElementById('paginationContainer');
+        
+        const filteredRecords = getFilteredRecords();
+        
+        if (filteredRecords.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            paginationContainer.style.display = 'none';
+            
+            const emptyStateText = document.querySelector('#emptyState p');
+            if (searchQuery) {
+                emptyStateText.textContent = '没有找到匹配的钱包地址';
+            } else {
+                emptyStateText.textContent = '当有钱包连接时，记录将显示在这里';
+            }
+            return;
+        }
+
+        emptyState.style.display = 'none';
+        
+        const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+        const startIndex = (currentPage - 1) * recordsPerPage;
+        const endIndex = startIndex + recordsPerPage;
+        const currentRecords = filteredRecords.slice(startIndex, endIndex);
+        
+        container.innerHTML = currentRecords.map(record => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card wallet-record-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="wallet-type-badge bg-primary text-white">
+                                ${record.type.toUpperCase()}
+                            </span>
+                            <span class="status-badge ${record.status === 'connected' ? 'bg-success' : 'bg-warning'} text-white">
+                                ${record.status === 'connected' ? '已连接' : '已断开'}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">钱包地址</small>
+                            <div class="address-text text-break">
+                                ${record.address}
+                            </div>
+                        </div>
+                        
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <small class="text-muted d-block">首次连接</small>
+                                <small>${record.first_seen || new Date(record.timestamp).toLocaleString()}</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">最后活动</small>
+                                <small>${record.last_seen || new Date(record.lastSeen).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-outline-danger btn-sm w-100" onclick="deleteRecord(${record.id})">
+                                <i class="bi bi-trash me-1"></i>删除记录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        renderPagination(filteredRecords.length, totalPages);
+    }
+
+    function renderPagination(totalRecords, totalPages) {
+        const paginationContainer = document.getElementById('paginationContainer');
+        const paginationInfo = document.getElementById('paginationInfo');
+        const pageNumbers = document.getElementById('pageNumbers');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        if (totalPages <= 1) {
+            paginationContainer.style.display = 'none';
+            return;
+        }
+        
+        paginationContainer.style.display = 'flex';
+        
+        const startRecord = (currentPage - 1) * recordsPerPage + 1;
+        const endRecord = Math.min(currentPage * recordsPerPage, totalRecords);
+        paginationInfo.textContent = `显示 ${startRecord}-${endRecord} 条，共 ${totalRecords} 条记录`;
+        
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+        
+        pageNumbers.innerHTML = '';
+        
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        
+        if (endPage - startPage < 4) {
+            if (startPage === 1) {
+                endPage = Math.min(totalPages, startPage + 4);
+            } else {
+                startPage = Math.max(1, endPage - 4);
+            }
+        }
+        
+        if (startPage > 1) {
+            pageNumbers.appendChild(createPageButton(1));
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-btn';
+                ellipsis.style.border = 'none';
+                ellipsis.style.cursor = 'default';
+                pageNumbers.appendChild(ellipsis);
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.appendChild(createPageButton(i));
+        }
+        
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-btn';
+                ellipsis.style.border = 'none';
+                ellipsis.style.cursor = 'default';
+                pageNumbers.appendChild(ellipsis);
+            }
+            pageNumbers.appendChild(createPageButton(totalPages));
+        }
+    }
+
+    function createPageButton(pageNum) {
+        const button = document.createElement('button');
+        button.textContent = pageNum;
+        button.className = `pagination-btn ${pageNum === currentPage ? 'active' : ''}`;
+        button.onclick = () => goToPage(pageNum);
+        return button;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderRecords();
+    }
+
+    function changePage(direction) {
+        const filteredRecords = getFilteredRecords();
+        const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+        
+        const newPage = currentPage + direction;
+        if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            renderRecords();
+        }
+    }
+
+    async function deleteRecord(id) {
+        if (confirm('确定要删除这条记录吗？')) {
+            try {
+                const response = await fetch(`/api/wallet_records/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadWalletRecords();
+                } else {
+                    console.error('删除钱包记录失败:', result.message);
+                    alert('删除失败，请稍后重试');
+                }
+            } catch (error) {
+                console.error('删除钱包记录时出错:', error);
+                alert('删除失败，请稍后重试');
+            }
+        }
+    }
+
+    function clearAllRecords() {
+        if (confirm('确定要清空所有钱包连接记录吗？此操作不可恢复。')) {
+            walletRecords = [];
+            localStorage.removeItem('walletConnectionRecords');
+            currentPage = 1;
+            updateStats();
+            renderRecords();
+        }
+    }
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.filter;
+            currentPage = 1;
+            renderRecords();
+        });
+    });
+
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'walletConnectionRecords') {
+            loadWalletRecords();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadWalletRecords();
+        
+        setInterval(loadWalletRecords, 5000);
+    });
+
+    window.addWalletRecord = addWalletRecord;
+
+    const searchInput = document.getElementById('addressSearch');
+    const clearSearch = document.getElementById('clearSearch');
+    
+    searchInput.addEventListener('input', function(e) {
+        searchQuery = e.target.value.trim();
+        clearSearch.style.display = searchQuery ? 'block' : 'none';
+        currentPage = 1;
+        renderRecords();
+    });
+    
+    clearSearch.addEventListener('click', function() {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearch.style.display = 'none';
+        currentPage = 1;
+        renderRecords();
+    });
+    
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            searchQuery = '';
+            clearSearch.style.display = 'none';
+            currentPage = 1;
+            renderRecords();
+            searchInput.blur();
+        }
+    });
+</script>
+{% endblock %} 

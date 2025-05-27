@@ -1,0 +1,384 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户充值 - GlobalSMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        
+        .stats-container {
+            background: #f8f9fa;
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        
+        .stats-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+        }
+        
+        .stats-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 50%;
+            background: rgba(33, 37, 41, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+        
+        .stats-content {
+            flex: 1;
+        }
+        
+        .stats-content h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+        
+        .stats-content p {
+            margin-bottom: 0;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        
+        
+        @media (max-width: 767.98px) {
+            .stats-container {
+                padding: 1rem;
+            }
+            
+            .stats-item {
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+                padding: 1rem 0;
+            }
+            
+            .stats-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+            
+            .stats-item:first-child {
+                padding-top: 0;
+            }
+            
+            .stats-icon {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+            }
+            
+            .stats-content h6 {
+                font-size: 0.95rem;
+            }
+            
+            .stats-content p {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/header.html' %}
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-primary text-white p-4 rounded-top">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-2 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                <i class="bi bi-wallet2 text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold">账户充值</h3>
+                                <p class="mb-0 text-white-50 small">Balance Recharge</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-12">
+                                <div class="stats-container">
+                                    <div class="stats-item">
+                                        <div class="stats-icon">
+                                            <i class="bi bi-currency-bitcoin text-dark fs-5"></i>
+                                        </div>
+                                        <div class="stats-content">
+                                            <h6 class="fw-bold">USDT支付</h6>
+                                            <p class="text-muted">仅支持TRC20网络</p>
+                                        </div>
+                                    </div>
+                                    <div class="stats-item">
+                                        <div class="stats-icon">
+                                            <i class="bi bi-lightning-charge text-dark fs-5"></i>
+                                        </div>
+                                        <div class="stats-content">
+                                            <h6 class="fw-bold">实时到账</h6>
+                                            <p class="text-muted">系统自动确认</p>
+                                        </div>
+                                    </div>
+                                    <div class="stats-item">
+                                        <div class="stats-icon">
+                                            <i class="bi bi-shield-lock text-dark fs-5"></i>
+                                        </div>
+                                        <div class="stats-content">
+                                            <h6 class="fw-bold">安全保障</h6>
+                                            <p class="text-muted">资金全程担保</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form action="{{ url_for('recharge_usdt') }}" method="post" id="rechargeForm">
+                            <div class="mb-4">
+                                <label for="amount" class="form-label fw-bold">充值金额 (USDT)</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                    <input type="number" class="form-control form-control-lg" id="amount" name="amount" min="10" step="1" value="50" required>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <div class="amount-chip" data-amount="10">10 USDT</div>
+                                        <div class="amount-chip" data-amount="50">50 USDT</div>
+                                        <div class="amount-chip" data-amount="100">100 USDT</div>
+                                        <div class="amount-chip" data-amount="200">200 USDT</div>
+                                        <div class="amount-chip" data-amount="500">500 USDT</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">支付网络</label>
+                                <div class="card payment-network-card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="network" id="trc20" value="trc20" checked>
+                                                <label class="form-check-label" for="trc20">
+                                                    <strong>TRC20</strong>
+                                                </label>
+                                            </div>
+                                            <div class="ms-3">
+                                                <span class="badge bg-accent text-white">推荐</span>
+                                                <small class="text-muted ms-2">更低手续费，更快确认</small>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 d-flex align-items-center bg-light p-2 rounded">
+                                            <div class="me-3">
+                                                <img src="https://static.tronscan.org/production/logo/usdtlogo.png" alt="USDT" width="40" height="40" onerror="this.src='https://via.placeholder.com/40?text=USDT'">
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">USDT-TRC20</h6>
+                                                <small class="text-muted">Tether on TRON Network</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 bg-light p-3 rounded mb-4">
+                                <h6><i class="bi bi-shield-check text-primary me-2"></i>充值须知</h6>
+                                <ul class="mb-0 ps-4">
+                                    <li>请确保从正规渠道购买和转账USDT，避免资金损失</li>
+                                    <li>最小充值金额为10 USDT，小于此金额将无法到账</li>
+                                    <li><strong>务必选择TRC20网络</strong>，其他网络转账可能导致资金无法到账</li>
+                                    <li>充值完成后，一般1-5分钟内到账（视区块网络拥堵情况）</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg py-3 rounded-3 shadow-sm">
+                                    <i class="bi bi-lightning-charge-fill me-2"></i> 
+                                    立即充值 <span class="amount-display">50</span> USDT
+                                </button>
+                            </div>
+                            
+                            <div class="mt-3 text-center">
+                                <small class="text-muted">点击按钮即表示您同意 <a href="#" class="text-decoration-none text-tertiary" data-bs-toggle="modal" data-bs-target="#agreementModal">《充值服务协议》</a></small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-light p-3 rounded-bottom d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> 返回首页
+                        </a>
+                        <a href="#" class="btn btn-link text-tertiary text-decoration-none" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="bi bi-headset"></i> 充值遇到问题?
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">
+                        <i class="bi bi-question-circle text-primary me-2"></i>充值帮助
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-content">
+                        <div class="mb-4">
+                            <h6 class="fw-bold"><i class="bi bi-1-circle-fill text-primary me-2"></i>常见问题</h6>
+                            <ul class="list-unstyled ps-4">
+                                <li class="mb-2">• 转账后长时间未到账</li>
+                                <li class="mb-2">• 转错金额或使用了错误的网络</li>
+                                <li class="mb-2">• 充值订单已过期</li>
+                                <li class="mb-2">• 其他充值相关问题</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <a href="https://t.me/jofax" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-telegram me-2"></i>联系客服
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agreementModal" tabindex="-1" aria-labelledby="agreementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agreementModalLabel">
+                        <i class="bi bi-file-text text-primary me-2"></i>充值服务协议
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="agreement-content">
+                        <div class="mb-4">
+                            <h6 class="fw-bold">一、服务说明</h6>
+                            <p class="text-muted">本协议是您与GlobalSMS平台就充值服务等相关事项所订立的契约。您通过充值，即表示您已经同意本协议的全部条款。</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h6 class="fw-bold">二、充值规则</h6>
+                            <ol class="text-muted">
+                                <li class="mb-2">充值金额必须大于或等于10 USDT；</li>
+                                <li class="mb-2">必须使用TRC20网络进行转账，其他网络的转账可能导致资金损失；</li>
+                                <li class="mb-2">转账时请确保金额准确，系统将自动匹配订单金额；</li>
+                                <li class="mb-2">充值订单有效期为15分钟，请在有效期内完成支付。</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">三、资金安全</h6>
+                            <p class="text-muted">我们采用业内领先的安全技术保护您的资金安全。所有交易都经过多重加密处理，确保资金转账的安全性。</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">四、免责声明</h6>
+                            <ol class="text-muted">
+                                <li class="mb-2">因用户操作失误导致的充值问题，平台不承担责任；</li>
+                                <li class="mb-2">使用非TRC20网络转账造成的损失，平台不承担责任；</li>
+                                <li class="mb-2">因不可抗力因素导致的充值延迟，平台将协助处理但不承担责任。</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold">五、其他条款</h6>
+                            <p class="text-muted">平台保留对本协议的最终解释权。如有任何疑问，请联系客服咨询。</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="bi bi-check-circle me-2"></i>我已阅读并同意
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const amountChips = document.querySelectorAll('.amount-chip');
+            const amountInput = document.getElementById('amount');
+            const amountDisplay = document.querySelector('.amount-display');
+            
+            amountChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    
+                    amountChips.forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    
+                    
+                    const amount = this.getAttribute('data-amount');
+                    amountInput.value = amount;
+                    
+                    
+                    if (amountDisplay) {
+                        amountDisplay.textContent = amount;
+                    }
+                });
+            });
+            
+            
+            amountInput.addEventListener('input', function() {
+                if (amountDisplay) {
+                    amountDisplay.textContent = this.value;
+                }
+                
+                amountChips.forEach(chip => {
+                    if (chip.getAttribute('data-amount') === this.value) {
+                        chip.classList.add('active');
+                    } else {
+                        chip.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        .amount-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .amount-chip:hover {
+            background-color: #e9ecef;
+        }
+        
+        .amount-chip.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</body>
+</html>

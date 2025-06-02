@@ -1,0 +1,1 @@
+剪贴板读取失败: No clipboard utilities available. Please install xsel, xclip, wl-clipboard or Termux:API add-on for termux-clipboard-get/set.

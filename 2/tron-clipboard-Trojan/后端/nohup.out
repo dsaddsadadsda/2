@@ -1,0 +1,155 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [ERROR] listen tcp :7777: bind: address already in use
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [ERROR] listen tcp :7777: bind: address already in use
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [ERROR] listen tcp :7777: bind: address already in use
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [ERROR] listen tcp :7777: bind: address already in use
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.tmpl
+
+[GIN-debug] GET    /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] HEAD   /favicon.ico              --> github.com/gin-gonic/gin.(*RouterGroup).StaticFile.func1 (3 handlers)
+[GIN-debug] GET    /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /statics/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] POST   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PUT    /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] PATCH  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] HEAD   /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] OPTIONS /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] DELETE /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] CONNECT /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] TRACE  /                         --> GinHello/handler.Index (3 handlers)
+[GIN-debug] GET    /v1/getadress             --> GinHello/handler.Getadress (3 handlers)
+[GIN-debug] Listening and serving HTTP on :7777
+[GIN-debug] [ERROR] listen tcp :7777: bind: address already in use
